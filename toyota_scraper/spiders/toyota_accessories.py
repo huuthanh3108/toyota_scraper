@@ -1,6 +1,5 @@
 import scrapy
 from datetime import datetime
-from crawlab import save_item
 
 class ToyotaAccessorySpider(scrapy.Spider):
     name = "toyota_accessories"
@@ -13,7 +12,7 @@ class ToyotaAccessorySpider(scrapy.Spider):
         products = response.css("div.phukien-home")
 
         for product in products:
-            result = {
+            yield {
                 "name": product.css(".description h4::text").get(default="").strip(),
                 "price": product.css(".price-phukien span::text").get(default="").strip(),
                 "image": product.css(".img img::attr(data-src)").get(),
@@ -22,7 +21,6 @@ class ToyotaAccessorySpider(scrapy.Spider):
                 ),
                 "crawl_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
-            save_item(result)
 
         # pagination
         next_page = response.css("ul.pagination li:last-child[class~='action'] a::attr(href)").get(default=None)
